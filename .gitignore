@@ -1,2 +1,5 @@
 .zip
 .idea
+*.zip
+songDownloader
+.DS_Store
