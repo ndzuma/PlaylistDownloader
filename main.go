@@ -3,17 +3,20 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/kkdai/youtube/v2"
-	"github.com/sqweek/dialog"
-	ffmpeg_go "github.com/u2takey/ffmpeg-go"
 	"io"
 	"log"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/kkdai/youtube/v2"
+	"github.com/sqweek/dialog"
+	ffmpeg_go "github.com/u2takey/ffmpeg-go"
 )
 
 type Song struct {
@@ -38,6 +41,17 @@ func (de DownloadError) Error() string {
 }
 
 func main() {
+	switch runtime.GOOS {
+	case "linux", "darwin":
+		cmd := exec.Command("clear")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	case "windows":
+		cmd := exec.Command("cmd", "/c", "cls")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+
 	log.SetOutput(io.Discard)
 	fmt.Println("Welcome to the playlist downloader!")
 	fmt.Println("Enter the playlist URL (Make sure it's public): ")
