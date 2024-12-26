@@ -52,22 +52,64 @@ func main() {
 		cmd.Run()
 	}
 
+	logo := `
+ ___  _____  _  _  ___    ____  _____  _    _  _  _  __    _____    __    ____  ____  ____ 
+/ __)(  _  )( \( )/ __)  (  _ \(  _  )( \/\/ )( \( )(  )  (  _  )  /__\  (  _ \( ___)(  _ \
+\__ \ )(_)(  )  (( (_-.   )(_) ))(_)(  )    (  )  (  )(__  )(_)(  /(__)\  )(_) ))__)  )   /
+(___/(_____)(_)\_)\___/  (____/(_____)(__/\__)(_)\_)(____)(_____)(__)(__)(____/(____)(_)\_)`
+
 	log.SetOutput(io.Discard)
-	fmt.Println("Welcome to the playlist downloader!")
-	fmt.Println("Enter the playlist URL (Make sure it's public): ")
-	var playlistURL string
-	fmt.Scanln(&playlistURL)
+	var (
+		choice int
+		URL    string
+	)
+
+	fmt.Println(logo + "")
+	fmt.Println("By: Ndzuma Malate\n")
+
+	fmt.Println("Select desired output directory: ")
 	outputDir, err := dialog.Directory().Title("Select Output Directory").Browse()
 	if err != nil {
 		fmt.Printf("Error selecting directory: %v\n", err)
 		return
 	}
+	fmt.Printf("Output directory: %s", outputDir)
 
-	// testing extractPlaylistInfo
-	err = processPlaylist(playlistURL, outputDir)
-	if err != nil {
-		fmt.Printf("Error processing playlist: %v\n", err)
+	fmt.Println("\nChoose an option: ")
+	fmt.Println("1. Download a YouTube playlist")
+	fmt.Println("2. Donwload a single YouTube video")
+	fmt.Println("3. Exit\n")
+	fmt.Print("> ")
+	fmt.Scanln(&choice)
+	switch choice {
+	case 1:
+		fmt.Println("Enter the playlist URL (Make sure it's public): ")
+		fmt.Print("> ")
+		fmt.Scanln(&URL)
+
+		// downloading playlist
+		err = processPlaylist(URL, outputDir)
+		if err != nil {
+			fmt.Printf("Error processing playlist: %v\n", err)
+		}
+	case 2:
+		fmt.Println("Enter the video URL (Make sure it's public): ")
+		fmt.Print("> ")
+		fmt.Scanln(&URL)
+
+		// downloading video
+		err = downloadYtVideoWithRetry(URL, outputDir, 3)
+		if err != nil {
+			fmt.Printf("Error downloading video: %v\n", err)
+		}
+	case 3:
+		fmt.Println("Exiting...")
+		return
+	default:
+		fmt.Println("Invalid choice. Exiting...")
+		return
 	}
+
 	fmt.Println("Press enter to exit...")
 	fmt.Scanln()
 }
